@@ -122,10 +122,10 @@ export default function HeroSection() {
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: '+=620%',
+          end: '+=190%',
           pin: true,
           pinSpacing: true,
-          scrub: 1.15,
+          scrub: 0.12,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onRefresh: setInitialCardState,
@@ -188,14 +188,14 @@ export default function HeroSection() {
           el,
           {
             x: 0,
-            y: 92,
+            y: 168,
             z: 0,
             rotation: 0,
-            scale: 1.08,
+            scale: 1.26,
             filter:
               'drop-shadow(0 16px 28px rgba(0,0,0,0.11)) drop-shadow(0 4px 10px rgba(0,0,0,0.08))',
             ease: 'none',
-            duration: 0.5,
+            duration: 0.1,
           },
           0,
         )
@@ -353,9 +353,9 @@ export default function HeroSection() {
           ref={gridRef}
           className="grid grid-cols-2 content-start transform-gpu"
           style={{
-            width: 'clamp(830px, 64vw, 1180px)',
-            minWidth: 830,
-            gap: 6,
+            width: 'clamp(860px, 66vw, 1220px)',
+            minWidth: 860,
+            gap: '34px 32px',
             paddingTop: 'clamp(158px, 15.2vh, 184px)',
             transformPerspective: 1400,
             transformStyle: 'preserve-3d',
