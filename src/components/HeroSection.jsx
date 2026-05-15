@@ -6,11 +6,6 @@ gsap.registerPlugin(ScrollTrigger)
 
 const cards = [
   {
-    name: 'Kora',
-    type: 'Consulting Site',
-    img: 'https://framerusercontent.com/images/K6cUNifhQFa6qEX3kqNwfqMkiY.jpg?width=1600&height=1200',
-  },
-  {
     name: 'KYMA',
     type: 'AI Agency',
     img: 'https://framerusercontent.com/images/wn56GiYIGN9okbMTZQ8fV2UQ0.jpg?width=1600&height=1200',
@@ -25,13 +20,18 @@ const cards = [
     type: 'Ecommerce Site',
     img: 'https://framerusercontent.com/images/AZe7hFsRlGAWp9spF25RMEwS0gA.jpg?width=1600&height=1200',
   },
+  {
+    name: 'Kora',
+    type: 'Consulting Site',
+    img: 'https://framerusercontent.com/images/K6cUNifhQFa6qEX3kqNwfqMkiY.jpg?width=1600&height=1200',
+  },
 ]
 
 const stackOffsets = [
-  { dx: -82, dy: 16, rotation: -7.5, depth: 1 },
-  { dx: 66, dy: -56, rotation: 6.5, depth: 0.72 },
-  { dx: -38, dy: 86, rotation: -3.2, depth: 0.58 },
-  { dx: 128, dy: 40, rotation: 7.8, depth: 0.42 },
+  { dx: 14, dy: -6, rotation: 8.5, depth: 1 },
+  { dx: -92, dy: 10, rotation: -8, depth: 0.74 },
+  { dx: 78, dy: 28, rotation: 6.5, depth: 0.58 },
+  { dx: 10, dy: 58, rotation: -4.5, depth: 0.42 },
 ]
 
 function ArrowIcon({ className }) {
@@ -54,7 +54,6 @@ export default function HeroSection() {
   const textInnerRef = useRef(null)
   const gridRef = useRef(null)
   const cardRefs = useRef([])
-  const metaRefs = useRef([])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -62,16 +61,26 @@ export default function HeroSection() {
       const text = textRef.current
       const grid = gridRef.current
       const cardsEls = cardRefs.current.filter(Boolean)
-      const metaEls = metaRefs.current.filter(Boolean)
+      const headlineHighlights = section.querySelectorAll('.hero-highlight')
+      const copyHighlight = section.querySelector('.hero-copy-highlight')
 
       const setInitialCardState = () => {
+        gsap.set(cardsEls, {
+          x: 0,
+          y: 0,
+          z: 0,
+          rotation: 0,
+          scale: 1,
+          clearProps: 'filter',
+        })
+
         const rect = section.getBoundingClientRect()
         const isMobile = window.innerWidth < 768
-        const stackCX = isMobile ? rect.width * 0.52 : rect.width * 0.705
-        const stackCY = isMobile ? rect.height * 0.64 : rect.height * 0.43
+        const stackCX = isMobile ? rect.width * 0.52 : rect.width * 0.672
+        const stackCY = isMobile ? rect.height * 0.62 : rect.height * 0.34
         const initialScale = isMobile
           ? 0.52
-          : Math.min(0.76, Math.max(0.68, window.innerWidth / 2750))
+          : Math.min(0.82, Math.max(0.71, window.innerWidth / 2450))
 
         cardsEls.forEach((el, index) => {
           const cardRect = el.getBoundingClientRect()
@@ -91,8 +100,6 @@ export default function HeroSection() {
             transformStyle: 'preserve-3d',
           })
         })
-
-        gsap.set(metaEls, { opacity: 0, y: 18, filter: 'blur(8px)' })
       }
 
       setInitialCardState()
@@ -115,13 +122,26 @@ export default function HeroSection() {
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: '+=460%',
+          end: '+=620%',
           pin: true,
           pinSpacing: true,
-          scrub: 1.35,
+          scrub: 1.15,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onRefresh: setInitialCardState,
+          onUpdate: (self) => {
+            window.dispatchEvent(
+              new CustomEvent('hero-nav-compact', {
+                detail: { compact: self.progress > 0.015 && self.progress < 0.965 },
+              }),
+            )
+          },
+          onLeave: () => {
+            window.dispatchEvent(new CustomEvent('hero-nav-compact', { detail: { compact: false } }))
+          },
+          onLeaveBack: () => {
+            window.dispatchEvent(new CustomEvent('hero-nav-compact', { detail: { compact: false } }))
+          },
         },
       })
 
@@ -134,54 +154,52 @@ export default function HeroSection() {
           ease: 'power2.inOut',
           duration: 0.38,
         },
-        0,
+        0.58,
       )
 
-      cardsEls.forEach((el, index) => {
-        const stack = stackOffsets[index]
+      tl.to(
+        headlineHighlights,
+        {
+          color: '#fff',
+          backgroundColor: '#000',
+          boxDecorationBreak: 'clone',
+          WebkitBoxDecorationBreak: 'clone',
+          ease: 'none',
+          duration: 0.12,
+        },
+        0.08,
+      )
 
-        tl.to(
-          el,
-          {
-            x: () => `+=${gsap.getProperty(el, 'x') * 0.03 * stack.depth}`,
-            y: () => `+=${gsap.getProperty(el, 'y') * 0.06 * stack.depth}`,
-            rotation: stack.rotation * 0.6,
-            scale: '+=0.025',
-            ease: 'sine.inOut',
-            duration: 0.18,
-          },
-          0,
-        )
+      tl.to(
+        copyHighlight,
+        {
+          color: '#fff',
+          backgroundColor: '#000',
+          boxDecorationBreak: 'clone',
+          WebkitBoxDecorationBreak: 'clone',
+          ease: 'none',
+          duration: 0.12,
+        },
+        0.1,
+      )
 
+      cardsEls.forEach((el) => {
         tl.to(
           el,
           {
             x: 0,
-            y: 0,
+            y: 92,
             z: 0,
             rotation: 0,
-            scale: 1,
+            scale: 1.08,
             filter:
               'drop-shadow(0 16px 28px rgba(0,0,0,0.11)) drop-shadow(0 4px 10px rgba(0,0,0,0.08))',
-            ease: 'power3.out',
-            duration: 0.64,
+            ease: 'none',
+            duration: 0.5,
           },
-          0.18 + index * 0.025,
+          0,
         )
       })
-
-      tl.to(
-        metaEls,
-        {
-          opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-          ease: 'power3.out',
-          stagger: 0.045,
-          duration: 0.22,
-        },
-        0.66,
-      )
 
       const moveTextX = gsap.quickTo(textInnerRef.current, 'x', {
         duration: 0.55,
@@ -192,7 +210,6 @@ export default function HeroSection() {
         ease: 'power3.out',
       })
       const moveGridX = gsap.quickTo(grid, 'x', { duration: 0.6, ease: 'power3.out' })
-      const moveGridY = gsap.quickTo(grid, 'y', { duration: 0.6, ease: 'power3.out' })
       const rotateGridX = gsap.quickTo(grid, 'rotateX', { duration: 0.6, ease: 'power3.out' })
       const rotateGridY = gsap.quickTo(grid, 'rotateY', { duration: 0.6, ease: 'power3.out' })
 
@@ -204,7 +221,6 @@ export default function HeroSection() {
         moveTextX(px * -8)
         moveTextY(py * -5)
         moveGridX(px * 18)
-        moveGridY(py * 12)
         rotateGridX(py * -1.6)
         rotateGridY(px * 2.2)
       }
@@ -213,7 +229,6 @@ export default function HeroSection() {
         moveTextX(0)
         moveTextY(0)
         moveGridX(0)
-        moveGridY(0)
         rotateGridX(0)
         rotateGridY(0)
       }
@@ -224,6 +239,7 @@ export default function HeroSection() {
       ScrollTrigger.refresh()
 
       return () => {
+        window.dispatchEvent(new CustomEvent('hero-nav-compact', { detail: { compact: false } }))
         section.removeEventListener('mousemove', onMouseMove)
         section.removeEventListener('mouseleave', onMouseLeave)
       }
@@ -242,13 +258,13 @@ export default function HeroSection() {
         ref={textRef}
         className="absolute top-0 z-30 flex h-full flex-col justify-start"
         style={{
-          left: 'clamp(72px, 16.8vw, 324px)',
+          left: 'clamp(88px, 17.3vw, 336px)',
           width: 'clamp(600px, 36vw, 760px)',
-          paddingTop: 'clamp(168px, 16.8vh, 202px)',
+          paddingTop: 'clamp(158px, 15.2vh, 184px)',
           willChange: 'transform, opacity, filter',
         }}
       >
-        <div ref={textInnerRef}>
+        <div ref={textInnerRef} className="relative">
           <div
             className="hero-reveal inline-flex w-fit items-center gap-2 rounded-full border border-[#e5e5e5] bg-white/90 px-3 py-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.08)]"
             style={{ marginBottom: 30 }}
@@ -269,22 +285,28 @@ export default function HeroSection() {
           </div>
 
           <h1
-            className="hero-reveal mb-5 leading-[1.0] tracking-[-0.04em]"
+            className="hero-reveal mb-9 leading-[1.0] tracking-[-0.04em]"
             style={{ fontSize: 'clamp(54px, 4.65vw, 88px)' }}
           >
-            <span className="block font-medium text-[#8f8f8f]">Design that</span>
-            <span className="block font-semibold text-[#111111]">delivers results.</span>
+            <span className="hero-highlight block w-fit px-1 font-medium text-[#8f8f8f]">
+              Design that
+            </span>
+            <span className="hero-highlight block w-fit px-1 font-semibold text-[#111111]">
+              delivers results.
+            </span>
           </h1>
 
           <p
             className="hero-reveal mb-6 leading-[1.6] tracking-[-0.015em]"
             style={{ fontSize: 'clamp(15px, 1.02vw, 19px)', maxWidth: 500 }}
           >
-            <strong className="font-semibold text-[#1a1a1a]">
-              Strategic design that drives growth, not just looks good.
-            </strong>{' '}
-            <span className="text-[#666]">
-              I create everything your brand needs to attract customers and turn them into sales.
+            <span className="hero-copy-highlight px-1">
+              <strong className="font-semibold text-inherit">
+                Strategic design that drives growth, not just looks good.
+              </strong>{' '}
+              <span className="text-inherit">
+                I create everything your brand needs to attract customers and turn them into sales.
+              </span>
             </span>
           </p>
 
@@ -331,10 +353,10 @@ export default function HeroSection() {
           ref={gridRef}
           className="grid grid-cols-2 content-start transform-gpu"
           style={{
-            width: 'clamp(860px, 65.35vw, 1256px)',
-            minWidth: 860,
-            gap: '26px 31px',
-            paddingTop: 18,
+            width: 'clamp(830px, 64vw, 1180px)',
+            minWidth: 830,
+            gap: 6,
+            paddingTop: 'clamp(158px, 15.2vh, 184px)',
             transformPerspective: 1400,
             transformStyle: 'preserve-3d',
             willChange: 'transform',
@@ -369,36 +391,20 @@ export default function HeroSection() {
                 <div className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-[7.5px] font-bold tracking-[0.02em] backdrop-blur-sm">
                   LaunchNow
                 </div>
-                <div className="absolute bottom-4 right-4 flex items-center gap-2 text-[17px] font-semibold tracking-[-0.02em] text-white">
-                  <span className="inline-grid h-5 w-5 place-items-center rounded-[4px] bg-white text-black">
+                <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
+                  <div>
+                    <p className="text-[14px] font-bold leading-none tracking-[-0.02em] text-white">
+                      {card.name}
+                    </p>
+                    <p className="mt-1 text-[10px] font-semibold tracking-[-0.01em] text-white/60">
+                      {card.type}
+                    </p>
+                  </div>
+                  <span className="inline-grid h-6 w-6 place-items-center rounded-[5px] bg-white text-black">
                     <ArrowIcon className="h-3.5 w-3.5" />
                   </span>
-                  LaunchNow
                 </div>
               </a>
-
-              <div
-                ref={(el) => {
-                  metaRefs.current[index] = el
-                }}
-                className="flex items-start justify-between pt-4"
-              >
-                <div>
-                  <h2 className="text-[24px] font-semibold leading-none tracking-[-0.04em] text-[#111]">
-                    {card.name}
-                  </h2>
-                  <p className="mt-2 text-[15px] font-semibold tracking-[-0.02em] text-[#666]">
-                    {card.type}
-                  </p>
-                </div>
-                <a
-                  href="#work"
-                  className="mt-1 inline-flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-[#727272] transition-colors duration-500 ease-out group-hover:text-black"
-                >
-                  <ArrowIcon className="h-4 w-4" />
-                  View Project
-                </a>
-              </div>
             </article>
           ))}
         </div>
