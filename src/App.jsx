@@ -3,11 +3,7 @@ import Lenis from 'lenis'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Navbar from './components/Navbar'
-import HeroSection    from './components/HeroSection'
-import WorkSection    from './components/WorkSection'
-import AboutSection   from './components/AboutSection'
-import PricingSection from './components/PricingSection'
-import ContactSection from './components/ContactSection'
+import HeroSection from './components/HeroSection'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -40,10 +36,6 @@ export default function App() {
     <div className="bg-white overflow-x-hidden">
       <Navbar lenisRef={lenisRef} />
       <HeroSection />
-      <WorkSection />
-      <AboutSection />
-      <PricingSection />
-      <ContactSection />
     </div>
   )
 }

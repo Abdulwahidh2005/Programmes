@@ -27,22 +27,17 @@ const cards = [
   },
 ]
 
+// Fan-stack offsets: each card's displacement + rotation relative to stack center
 const stackOffsets = [
-  { dx: 14, dy: -6, rotation: 8.5, depth: 1 },
-  { dx: -92, dy: 10, rotation: -8, depth: 0.74 },
-  { dx: 78, dy: 28, rotation: 6.5, depth: 0.58 },
-  { dx: 10, dy: 58, rotation: -4.5, depth: 0.42 },
+  { dx: 0,   dy: -5,  rotation: 5,   depth: 1    },
+  { dx: -68, dy: 8,   rotation: -15, depth: 0.75 },
+  { dx: 62,  dy: 18,  rotation: 11,  depth: 0.58 },
+  { dx: -18, dy: 38,  rotation: -6,  depth: 0.42 },
 ]
 
 function ArrowIcon({ className }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.4"
-    >
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
       <path d="M7 17L17 7M17 7H7M17 7v10" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
@@ -61,42 +56,38 @@ export default function HeroSection() {
       const text = textRef.current
       const grid = gridRef.current
       const cardsEls = cardRefs.current.filter(Boolean)
-      const headlineHighlights = section.querySelectorAll('.hero-highlight')
-      const copyHighlight = section.querySelector('.hero-copy-highlight')
+      const labels = section.querySelectorAll('.card-label, .grid-cta')
 
       const setInitialCardState = () => {
-        gsap.set(cardsEls, {
-          x: 0,
-          y: 0,
-          z: 0,
-          rotation: 0,
-          scale: 1,
-          clearProps: 'filter',
-        })
+        // Reset grid Y before measuring so getBoundingClientRect reflects natural positions
+        gsap.set(grid, { y: 0 })
+        // Reset cards to natural DOM positions
+        gsap.set(cardsEls, { x: 0, y: 0, z: 0, rotation: 0, scale: 1, clearProps: 'filter,zIndex' })
+        // Labels always hidden until cards reach their final grid positions
+        gsap.set(labels, { opacity: 0 })
 
         const rect = section.getBoundingClientRect()
         const isMobile = window.innerWidth < 768
-        const stackCX = isMobile ? rect.width * 0.52 : rect.width * 0.672
-        const stackCY = isMobile ? rect.height * 0.62 : rect.height * 0.34
-        const initialScale = isMobile
-          ? 0.52
-          : Math.min(0.82, Math.max(0.71, window.innerWidth / 2450))
 
-        cardsEls.forEach((el, index) => {
+        // Stack sits clearly to the right of the text
+        const stackCX = isMobile ? rect.width * 0.52 : rect.width * 0.68
+        const stackCY = isMobile ? rect.height * 0.55 : rect.height * 0.42
+        const scale   = isMobile ? 0.50 : 0.68
+
+        cardsEls.forEach((el, i) => {
           const cardRect = el.getBoundingClientRect()
-          const finalCX = cardRect.left - rect.left + cardRect.width / 2
-          const finalCY = cardRect.top - rect.top + cardRect.height / 2
-          const stack = stackOffsets[index]
+          const naturalCX = cardRect.left - rect.left + cardRect.width / 2
+          const naturalCY = cardRect.top - rect.top + cardRect.height / 2
+          const s = stackOffsets[i]
 
           gsap.set(el, {
-            x: stackCX - finalCX + stack.dx,
-            y: stackCY - finalCY + stack.dy,
-            rotation: stack.rotation,
-            scale: initialScale,
-            z: 100 * stack.depth,
-            zIndex: 10 - index,
-            filter:
-              'drop-shadow(0 34px 52px rgba(0,0,0,0.22)) drop-shadow(0 10px 18px rgba(0,0,0,0.14))',
+            x: stackCX - naturalCX + s.dx,
+            y: stackCY - naturalCY + s.dy,
+            rotation: s.rotation,
+            scale,
+            z: 80 * s.depth,
+            zIndex: 10 - i,
+            filter: 'drop-shadow(0 28px 44px rgba(0,0,0,0.22)) drop-shadow(0 8px 14px rgba(0,0,0,0.14))',
             transformStyle: 'preserve-3d',
           })
         })
@@ -104,127 +95,90 @@ export default function HeroSection() {
 
       setInitialCardState()
 
+      // Entrance reveal for text elements
       gsap.fromTo(
         section.querySelectorAll('.hero-reveal'),
-        { opacity: 0, y: 28, filter: 'blur(10px)' },
-        {
-          opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-          duration: 0.95,
-          ease: 'power3.out',
-          stagger: 0.08,
-          delay: 0.12,
-        },
+        { opacity: 0, y: 26, filter: 'blur(10px)' },
+        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out', stagger: 0.08, delay: 0.1 },
       )
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: '+=190%',
+          end: '+=240%',
           pin: true,
           pinSpacing: true,
-          scrub: 0.12,
+          scrub: 0.14,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onRefresh: setInitialCardState,
           onUpdate: (self) => {
-            window.dispatchEvent(
-              new CustomEvent('hero-nav-compact', {
-                detail: { compact: self.progress > 0.015 && self.progress < 0.965 },
-              }),
-            )
+            window.dispatchEvent(new CustomEvent('hero-nav-compact', {
+              detail: { compact: self.progress > 0.015 && self.progress < 0.965 },
+            }))
           },
-          onLeave: () => {
-            window.dispatchEvent(new CustomEvent('hero-nav-compact', { detail: { compact: false } }))
-          },
-          onLeaveBack: () => {
-            window.dispatchEvent(new CustomEvent('hero-nav-compact', { detail: { compact: false } }))
-          },
+          onLeave: () => window.dispatchEvent(new CustomEvent('hero-nav-compact', { detail: { compact: false } })),
+          onLeaveBack: () => window.dispatchEvent(new CustomEvent('hero-nav-compact', { detail: { compact: false } })),
         },
       })
 
-      tl.to(
-        text,
-        {
-          y: -62,
-          opacity: 0,
-          filter: 'blur(10px)',
-          ease: 'power2.inOut',
-          duration: 0.38,
-        },
-        0.58,
-      )
+      // Phase 1: text fades out immediately on scroll before cards move
+      tl.to(text, {
+        y: -80,
+        opacity: 0,
+        filter: 'blur(8px)',
+        ease: 'power2.in',
+        duration: 0.22,
+      }, 0)
 
-      tl.to(
-        headlineHighlights,
-        {
-          color: '#fff',
-          backgroundColor: '#000',
-          boxDecorationBreak: 'clone',
-          WebkitBoxDecorationBreak: 'clone',
-          ease: 'none',
-          duration: 0.12,
-        },
-        0.08,
-      )
-
-      tl.to(
-        copyHighlight,
-        {
-          color: '#fff',
-          backgroundColor: '#000',
-          boxDecorationBreak: 'clone',
-          WebkitBoxDecorationBreak: 'clone',
-          ease: 'none',
-          duration: 0.12,
-        },
-        0.1,
-      )
-
+      // Phase 2: cards spread from stacked fan to natural 2x2 grid positions
       cardsEls.forEach((el) => {
-        tl.to(
-          el,
-          {
-            x: 0,
-            y: 168,
-            z: 0,
-            rotation: 0,
-            scale: 1.26,
-            filter:
-              'drop-shadow(0 16px 28px rgba(0,0,0,0.11)) drop-shadow(0 4px 10px rgba(0,0,0,0.08))',
-            ease: 'none',
-            duration: 0.1,
-          },
-          0,
-        )
+        tl.to(el, {
+          x: 0,
+          y: 0,
+          z: 0,
+          rotation: 0,
+          scale: 1,
+          zIndex: 1,
+          filter: 'drop-shadow(0 14px 28px rgba(0,0,0,0.10)) drop-shadow(0 4px 8px rgba(0,0,0,0.07))',
+          ease: 'power2.inOut',
+          duration: 0.72,
+        }, 0.20)
       })
 
-      const moveTextX = gsap.quickTo(textInnerRef.current, 'x', {
-        duration: 0.55,
-        ease: 'power3.out',
-      })
-      const moveTextY = gsap.quickTo(textInnerRef.current, 'y', {
-        duration: 0.55,
-        ease: 'power3.out',
-      })
+      // Phase 3: grid slides up to reveal bottom 2 cards + button
+      tl.to(grid, {
+        y: () => -Math.max(0, gridRef.current.scrollHeight - sectionRef.current.getBoundingClientRect().height),
+        ease: 'power2.inOut',
+        duration: 0.40,
+      }, 0.92)
+
+      // Phase 4: labels fade in as bottom cards slide into view
+      tl.to(labels, {
+        opacity: 1,
+        duration: 0.14,
+        stagger: 0.04,
+        ease: 'power2.out',
+      }, 1.15)
+
+      // Mouse parallax depth effect
+      const moveTextX = gsap.quickTo(textInnerRef.current, 'x', { duration: 0.55, ease: 'power3.out' })
+      const moveTextY = gsap.quickTo(textInnerRef.current, 'y', { duration: 0.55, ease: 'power3.out' })
       const moveGridX = gsap.quickTo(grid, 'x', { duration: 0.6, ease: 'power3.out' })
       const rotateGridX = gsap.quickTo(grid, 'rotateX', { duration: 0.6, ease: 'power3.out' })
       const rotateGridY = gsap.quickTo(grid, 'rotateY', { duration: 0.6, ease: 'power3.out' })
 
-      const onMouseMove = (event) => {
+      const onMouseMove = (e) => {
         const rect = section.getBoundingClientRect()
-        const px = ((event.clientX - rect.left) / rect.width - 0.5) * 2
-        const py = ((event.clientY - rect.top) / rect.height - 0.5) * 2
-
+        const px = ((e.clientX - rect.left) / rect.width - 0.5) * 2
+        const py = ((e.clientY - rect.top) / rect.height - 0.5) * 2
         moveTextX(px * -8)
         moveTextY(py * -5)
-        moveGridX(px * 18)
-        rotateGridX(py * -1.6)
-        rotateGridY(px * 2.2)
+        moveGridX(px * 16)
+        rotateGridX(py * -1.5)
+        rotateGridY(px * 2)
       }
-
       const onMouseLeave = () => {
         moveTextX(0)
         moveTextY(0)
@@ -235,7 +189,6 @@ export default function HeroSection() {
 
       section.addEventListener('mousemove', onMouseMove)
       section.addEventListener('mouseleave', onMouseLeave)
-
       ScrollTrigger.refresh()
 
       return () => {
@@ -252,32 +205,28 @@ export default function HeroSection() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative h-screen min-h-[760px] w-full overflow-hidden bg-white"
+      className="relative h-screen min-h-190 w-full bg-white"
     >
+      {/* Left: text */}
       <div
         ref={textRef}
         className="absolute top-0 z-30 flex h-full flex-col justify-start"
         style={{
-          left: 'clamp(88px, 17.3vw, 336px)',
-          width: 'clamp(600px, 36vw, 760px)',
-          paddingTop: 'clamp(158px, 15.2vh, 184px)',
+          left: 'clamp(100px, 14vw, 230px)',
+          width: 'clamp(320px, 30vw, 480px)',
+          paddingTop: 'clamp(180px, 21vh, 230px)',
           willChange: 'transform, opacity, filter',
         }}
       >
         <div ref={textInnerRef} className="relative">
+
           <div
             className="hero-reveal inline-flex w-fit items-center gap-2 rounded-full border border-[#e5e5e5] bg-white/90 px-3 py-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.08)]"
-            style={{ marginBottom: 30 }}
+            style={{ marginBottom: 28 }}
           >
             <span className="relative h-3 w-3 shrink-0">
-              <span
-                className="absolute inset-0 rounded-full bg-[#21b30b]"
-                style={{ animation: 'pulse-ring 2s ease-in-out infinite alternate' }}
-              />
-              <span
-                className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#21b30b]"
-                style={{ animation: 'pulse-dot 2s ease-in-out infinite' }}
-              />
+              <span className="absolute inset-0 rounded-full bg-[#21b30b]" style={{ animation: 'pulse-ring 2s ease-in-out infinite alternate' }} />
+              <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#21b30b]" style={{ animation: 'pulse-dot 2s ease-in-out infinite' }} />
             </span>
             <span className="text-[12.5px] font-semibold tracking-[-0.01em] text-[#545454]">
               Available for August '25
@@ -285,78 +234,57 @@ export default function HeroSection() {
           </div>
 
           <h1
-            className="hero-reveal mb-9 leading-[1.0] tracking-[-0.04em]"
-            style={{ fontSize: 'clamp(54px, 4.65vw, 88px)' }}
+            className="hero-reveal mb-8 leading-none tracking-[-0.04em]"
+            style={{ fontSize: 'clamp(52px, 4.5vw, 84px)' }}
           >
-            <span className="hero-highlight block w-fit px-1 font-medium text-[#8f8f8f]">
-              Design that
-            </span>
-            <span className="hero-highlight block w-fit px-1 font-semibold text-[#111111]">
-              delivers results.
-            </span>
+            <span className="hero-highlight block w-fit px-1 font-medium text-[#8f8f8f]">Design that</span>
+            <span className="hero-highlight block w-fit px-1 font-semibold text-[#111111]">delivers results.</span>
           </h1>
 
           <p
-            className="hero-reveal mb-6 leading-[1.6] tracking-[-0.015em]"
-            style={{ fontSize: 'clamp(15px, 1.02vw, 19px)', maxWidth: 500 }}
+            className="hero-reveal mb-7 leading-[1.62] tracking-[-0.015em]"
+            style={{ fontSize: 'clamp(14.5px, 1vw, 17.5px)', maxWidth: 440 }}
           >
             <span className="hero-copy-highlight px-1">
-              <strong className="font-semibold text-inherit">
-                Strategic design that drives growth, not just looks good.
-              </strong>{' '}
-              <span className="text-inherit">
-                I create everything your brand needs to attract customers and turn them into sales.
-              </span>
+              <strong className="font-semibold text-inherit">Strategic design that drives growth, not just looks good.</strong>{' '}
+              <span className="text-inherit">I create everything your brand needs to attract customers and turn them into sales.</span>
             </span>
           </p>
 
           <a
             href="#contact"
             className="hero-reveal inline-flex w-fit items-center gap-3 overflow-hidden rounded-full bg-[#050505] font-semibold tracking-[-0.01em] text-white shadow-[0_12px_26px_rgba(0,0,0,0.25),0_4px_8px_rgba(0,0,0,0.22)_inset] transition-transform duration-300 hover:-translate-y-0.5 hover:scale-[1.025]"
-            style={{
-              fontSize: 'clamp(12px, 1vw, 13.5px)',
-              padding: '4px 20px 4px 4px',
-              marginBottom: 18,
-            }}
+            style={{ fontSize: 'clamp(12px, 1vw, 13.5px)', padding: '4px 20px 4px 4px', marginBottom: 20 }}
           >
-            <img
-              src="https://i.pravatar.cc/40?img=33"
-              alt=""
-              className="h-9 w-9 shrink-0 rounded-full object-cover"
-            />
+            <img src="https://i.pravatar.cc/40?img=33" alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" />
             Book a call with me
           </a>
 
           <div className="hero-reveal flex items-center gap-3">
             <div className="flex -space-x-2">
-              {['33', '11', '65', '26'].map((avatar) => (
-                <img
-                  key={avatar}
-                  src={`https://i.pravatar.cc/40?img=${avatar}`}
-                  alt=""
-                  className="h-7 w-7 rounded-full border-2 border-white object-cover"
-                />
+              {['33', '11', '65', '26'].map((id) => (
+                <img key={id} src={`https://i.pravatar.cc/40?img=${id}`} alt="" className="h-7 w-7 rounded-full border-2 border-white object-cover" />
               ))}
             </div>
             <div>
               <div className="text-[11px] tracking-wide text-[#FFB800]">★★★★★</div>
-              <span className="text-[11.5px] font-semibold tracking-[-0.01em] text-[#545454]">
-                80+ Happy clients
-              </span>
+              <span className="text-[11.5px] font-semibold tracking-[-0.01em] text-[#545454]">80+ Happy clients</span>
             </div>
           </div>
+
         </div>
       </div>
 
+      {/* Right: 2x2 project grid (centered, cards start stacked via GSAP) */}
       <div className="absolute inset-0 z-10 flex justify-center overflow-visible pointer-events-none">
         <div
           ref={gridRef}
-          className="grid grid-cols-2 content-start transform-gpu"
+          className="grid grid-cols-2 transform-gpu"
           style={{
-            width: 'clamp(860px, 66vw, 1220px)',
-            minWidth: 860,
-            gap: '34px 32px',
-            paddingTop: 'clamp(158px, 15.2vh, 184px)',
+            width: 'clamp(700px, 78vw, 1120px)',
+            gap: 'clamp(22px, 2.5vw, 36px)',
+            paddingTop: 'clamp(145px, 17vh, 175px)',
+            alignContent: 'start',
             transformPerspective: 1400,
             transformStyle: 'preserve-3d',
             willChange: 'transform',
@@ -365,9 +293,7 @@ export default function HeroSection() {
           {cards.map((card, index) => (
             <article
               key={card.name}
-              ref={(el) => {
-                cardRefs.current[index] = el
-              }}
+              ref={(el) => { cardRefs.current[index] = el }}
               className="group pointer-events-auto relative transform-gpu will-change-transform"
               style={{ transformStyle: 'preserve-3d' }}
             >
@@ -377,9 +303,7 @@ export default function HeroSection() {
                 style={{
                   aspectRatio: '4 / 3',
                   borderRadius: 10,
-                  boxShadow:
-                    '0 24px 55px rgba(0,0,0,0.16), 0 2px 0 rgba(255,255,255,0.28) inset',
-                  transform: `translateZ(${32 * stackOffsets[index].depth}px)`,
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.14), 0 2px 0 rgba(255,255,255,0.26) inset',
                 }}
               >
                 <img
@@ -387,26 +311,34 @@ export default function HeroSection() {
                   alt={card.name}
                   className="absolute inset-0 h-full w-full scale-[1.03] object-cover transition-transform duration-700 ease-out group-hover:scale-[1.08]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-80" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent" />
                 <div className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-[7.5px] font-bold tracking-[0.02em] backdrop-blur-sm">
                   LaunchNow
                 </div>
-                <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
-                  <div>
-                    <p className="text-[14px] font-bold leading-none tracking-[-0.02em] text-white">
-                      {card.name}
-                    </p>
-                    <p className="mt-1 text-[10px] font-semibold tracking-[-0.01em] text-white/60">
-                      {card.type}
-                    </p>
-                  </div>
-                  <span className="inline-grid h-6 w-6 place-items-center rounded-[5px] bg-white text-black">
-                    <ArrowIcon className="h-3.5 w-3.5" />
-                  </span>
-                </div>
               </a>
+
+              <div className="card-label mt-6 flex items-start justify-between gap-2 px-0.5">
+                <div>
+                  <p className="text-[15.5px] font-bold leading-none tracking-[-0.02em] text-[#111]">{card.name}</p>
+                  <p className="mt-1.5 text-[13px] font-medium tracking-[-0.01em] text-[#888]">{card.type}</p>
+                </div>
+                <a href="#work" className="flex shrink-0 items-center gap-1.5 text-[11.5px] font-semibold tracking-[-0.01em] text-[#111] opacity-50 transition-opacity hover:opacity-100">
+                  <ArrowIcon className="h-3 w-3" />
+                  View Project
+                </a>
+              </div>
             </article>
           ))}
+
+          <div className="grid-cta pointer-events-auto col-span-2 flex justify-center pt-5">
+            <a
+              href="#work"
+              className="inline-flex items-center gap-2 text-[13.5px] font-semibold tracking-[-0.01em] text-[#111] transition-opacity hover:opacity-60"
+            >
+              View all my projects
+              <ArrowIcon className="h-3.5 w-3.5" />
+            </a>
+          </div>
         </div>
       </div>
     </section>

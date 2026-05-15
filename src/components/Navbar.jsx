@@ -32,13 +32,13 @@ export default function Navbar({ lenisRef }) {
       initial={{ y: -24, opacity: 0, scale: 0.975, filter: 'blur(10px)' }}
       animate={{ y: 0, opacity: 1, scale: 1, filter: 'blur(0px)' }}
       transition={{ type: 'spring', stiffness: 70, damping: 19, mass: 0.9, delay: 0.04 }}
-      className="fixed left-0 right-0 top-[30px] z-50 flex justify-center px-5"
+      className="fixed left-0 right-0 top-[20px] z-50 flex justify-center px-5"
     >
       <motion.div
         className="hidden items-center justify-center overflow-hidden rounded-full border md:flex"
         animate={{
-          height: heroCompact ? 52 : 70,
-          minWidth: heroCompact ? 292 : 696,
+          height: heroCompact ? 48 : 62,
+          minWidth: heroCompact ? 270 : 640,
           paddingLeft: heroCompact ? 14 : 14,
           paddingRight: heroCompact ? 14 : 14,
           gap: heroCompact ? 18 : 34,
@@ -93,9 +93,9 @@ export default function Navbar({ lenisRef }) {
                 <img
                   src="https://i.pravatar.cc/48?img=33"
                   alt=""
-                  className="h-11 w-11 rounded-full object-cover"
+                  className="h-10 w-10 rounded-full object-cover"
                 />
-                <span className="text-[18px] font-semibold tracking-[-0.035em] text-[#050505]">
+                <span className="text-[16px] font-semibold tracking-[-0.035em] text-[#050505]">
                   Joseph Alexander
                 </span>
               </a>
@@ -105,7 +105,7 @@ export default function Navbar({ lenisRef }) {
                   <button
                     key={link.label}
                     onClick={() => scrollTo(link.href)}
-                    className="cursor-pointer border-none bg-transparent text-[16px] font-semibold tracking-[-0.035em] text-[#111] transition-colors duration-200 hover:text-[#6a6a6a]"
+                    className="cursor-pointer border-none bg-transparent text-[14px] font-semibold tracking-[-0.035em] text-[#111] transition-colors duration-200 hover:text-[#6a6a6a]"
                   >
                     {link.label}
                   </button>
@@ -121,7 +121,7 @@ export default function Navbar({ lenisRef }) {
                 }}
                 whileTap={{ scale: 0.985 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                className="shrink-0 cursor-pointer rounded-full border border-[#e8e8e8] bg-white/88 px-7 py-3 text-[16px] font-semibold tracking-[-0.035em] text-black shadow-[0_7px_18px_rgba(0,0,0,0.09),0_1px_0_rgba(255,255,255,0.95)_inset] transition-transform duration-200 hover:-translate-y-0.5"
+                className="shrink-0 cursor-pointer rounded-full border border-[#e8e8e8] bg-white/88 px-5 py-2 text-[14px] font-semibold tracking-[-0.035em] text-black shadow-[0_7px_18px_rgba(0,0,0,0.09),0_1px_0_rgba(255,255,255,0.95)_inset] transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Contact
               </motion.button>
