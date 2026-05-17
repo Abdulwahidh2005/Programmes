@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import TrustBar from './TrustBar'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -49,6 +50,7 @@ export default function HeroSection() {
   const textInnerRef = useRef(null)
   const gridRef = useRef(null)
   const cardRefs = useRef([])
+  const trustRef = useRef(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -129,10 +131,19 @@ export default function HeroSection() {
       tl.to(text, {
         y: () => -(sectionRef.current.getBoundingClientRect().height + 40),
         ease: 'none',
-        duration: 0.6,
+        duration: 1.3,
       }, 0)
 
-      // Phase 2: cards spread from stacked fan to natural 2x2 grid positions
+      // Phase 1b: trust row (bottom of hero) rises off the top in parallel — it
+      // starts at the bottom so it travels a bit further to fully clear the top.
+      tl.to(trustRef.current, {
+        y: () => -(sectionRef.current.getBoundingClientRect().height + 120),
+        ease: 'none',
+        duration: 1.3,
+      }, 0)
+
+      // Phase 2: cards spread from stacked fan to natural 2x2 grid positions —
+      // starts at scroll 0 and stretched so the stack expands on every scroll.
       cardsEls.forEach((el) => {
         tl.to(el, {
           x: 0,
@@ -143,8 +154,8 @@ export default function HeroSection() {
           zIndex: 1,
           filter: 'drop-shadow(0 14px 28px rgba(0,0,0,0.10)) drop-shadow(0 4px 8px rgba(0,0,0,0.07))',
           ease: 'power2.inOut',
-          duration: 0.72,
-        }, 0.20)
+          duration: 0.92,
+        }, 0)
       })
 
       // Phase 3: grid slides up to reveal bottom 2 cards + button
@@ -340,6 +351,14 @@ export default function HeroSection() {
             </a>
           </div>
         </div>
+      </div>
+
+      <div
+        ref={trustRef}
+        className="absolute inset-x-0 bottom-0"
+        style={{ zIndex: 5, willChange: 'transform' }}
+      >
+        <TrustBar />
       </div>
     </section>
   )

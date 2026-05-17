@@ -2,7 +2,7 @@ const logos = [
   {
     name: 'Codecraft_',
     icon: (
-      <svg viewBox="0 0 18 18" fill="none" width="18" height="18" style={{ flexShrink: 0 }}>
+      <svg viewBox="0 0 18 18" fill="none" width="22" height="22" style={{ flexShrink: 0 }}>
         <rect x="2" y="2" width="14" height="14" rx="3" stroke="currentColor" strokeWidth="1.6" />
         <path d="M6 9H12M9 6V12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
@@ -11,7 +11,7 @@ const logos = [
   {
     name: 'Frequencii',
     icon: (
-      <svg viewBox="0 0 18 18" fill="none" width="18" height="18" style={{ flexShrink: 0 }}>
+      <svg viewBox="0 0 18 18" fill="none" width="22" height="22" style={{ flexShrink: 0 }}>
         <path d="M2 9C2 9 4 5 7 9C10 13 13 9 16 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     ),
@@ -19,7 +19,7 @@ const logos = [
   {
     name: 'Kintsugi',
     icon: (
-      <svg viewBox="0 0 18 18" fill="none" width="18" height="18" style={{ flexShrink: 0 }}>
+      <svg viewBox="0 0 18 18" fill="none" width="22" height="22" style={{ flexShrink: 0 }}>
         <polygon points="9,1.5 16.5,6 16.5,12 9,16.5 1.5,12 1.5,6" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
       </svg>
     ),
@@ -27,7 +27,7 @@ const logos = [
   {
     name: 'KYMA',
     icon: (
-      <svg viewBox="0 0 18 18" fill="none" width="18" height="18" style={{ flexShrink: 0 }}>
+      <svg viewBox="0 0 18 18" fill="none" width="22" height="22" style={{ flexShrink: 0 }}>
         <path d="M2 14L6 9L2 4M8 14H16M8 9H14M8 4H16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
@@ -35,7 +35,7 @@ const logos = [
   {
     name: 'Axiom',
     icon: (
-      <svg viewBox="0 0 18 18" fill="none" width="18" height="18" style={{ flexShrink: 0 }}>
+      <svg viewBox="0 0 18 18" fill="none" width="22" height="22" style={{ flexShrink: 0 }}>
         <path d="M9 2L16 16H2L9 2Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
       </svg>
     ),
@@ -43,7 +43,7 @@ const logos = [
   {
     name: 'CoreOS',
     icon: (
-      <svg viewBox="0 0 18 18" fill="none" width="18" height="18" style={{ flexShrink: 0 }}>
+      <svg viewBox="0 0 18 18" fill="none" width="22" height="22" style={{ flexShrink: 0 }}>
         <circle cx="9" cy="9" r="7.5" stroke="currentColor" strokeWidth="1.6" />
         <circle cx="9" cy="9" r="3.5" stroke="currentColor" strokeWidth="1.6" />
       </svg>
@@ -52,7 +52,7 @@ const logos = [
   {
     name: 'Luminary',
     icon: (
-      <svg viewBox="0 0 18 18" fill="none" width="18" height="18" style={{ flexShrink: 0 }}>
+      <svg viewBox="0 0 18 18" fill="none" width="22" height="22" style={{ flexShrink: 0 }}>
         <path d="M9 1.5C9 1.5 13.5 5 13.5 9C13.5 13 9 16.5 9 16.5C9 16.5 4.5 13 4.5 9C4.5 5 9 1.5 9 1.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
         <path d="M1.5 9H16.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
@@ -61,7 +61,7 @@ const logos = [
   {
     name: '45 Degrees°',
     icon: (
-      <svg viewBox="0 0 18 18" fill="none" width="18" height="18" style={{ flexShrink: 0 }}>
+      <svg viewBox="0 0 18 18" fill="none" width="22" height="22" style={{ flexShrink: 0 }}>
         <path d="M4 14L14 4M14 4H6M14 4V12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
@@ -74,18 +74,13 @@ export default function TrustBar() {
   return (
     <div
       style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 90,
-        zIndex: 50,
-        background: 'rgba(255,255,255,0.96)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderTop: '1px solid #e5e5e5',
+        position: 'relative',
+        width: '100%',
+        height: 130,
+        paddingLeft: 'clamp(100px, 14vw, 230px)',
+        background: 'transparent',
         display: 'flex',
-        alignItems: 'stretch',
+        alignItems: 'center',
       }}
     >
       {/* Social proof */}
@@ -94,8 +89,6 @@ export default function TrustBar() {
           display: 'flex',
           alignItems: 'center',
           gap: 20,
-          padding: '0 32px',
-          borderRight: '1px solid #e5e5e5',
           flexShrink: 0,
           minWidth: 'clamp(220px, 18vw, 300px)',
         }}
@@ -118,8 +111,8 @@ export default function TrustBar() {
           ))}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-          <span style={{ fontSize: 13, color: '#FFB800', letterSpacing: '0.06em' }}>★★★★★</span>
-          <span style={{ fontSize: 14.5, fontWeight: 600, color: '#111', letterSpacing: '-0.02em', lineHeight: 1 }}>
+          <span style={{ fontSize: 15, color: '#FFB800', letterSpacing: '0.06em' }}>★★★★★</span>
+          <span style={{ fontSize: 18, fontWeight: 600, color: '#111', letterSpacing: '-0.02em', lineHeight: 1 }}>
             99+ Happy clients
           </span>
         </div>
@@ -130,12 +123,12 @@ export default function TrustBar() {
         {/* Fade edges */}
         <div style={{
           position: 'absolute', inset: '0 auto 0 0', width: 80, zIndex: 1,
-          background: 'linear-gradient(to right, rgba(255,255,255,0.96), transparent)',
+          background: 'linear-gradient(to right, #fff, transparent)',
           pointerEvents: 'none',
         }} />
         <div style={{
           position: 'absolute', inset: '0 0 0 auto', width: 80, zIndex: 1,
-          background: 'linear-gradient(to left, rgba(255,255,255,0.96), transparent)',
+          background: 'linear-gradient(to left, #fff, transparent)',
           pointerEvents: 'none',
         }} />
 
@@ -157,7 +150,7 @@ export default function TrustBar() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 9,
-                fontSize: 14.5,
+                fontSize: 18,
                 fontWeight: 600,
                 letterSpacing: '-0.02em',
                 color: '#555',
