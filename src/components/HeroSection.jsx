@@ -218,6 +218,16 @@ export default function HeroSection() {
       id="hero"
       className="relative h-screen min-h-190 w-full bg-white"
     >
+      {/* Decorative guide lines (hero-only) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0"
+        style={{ left: 'clamp(100px, 14vw, 230px)', right: 'clamp(100px, 14vw, 230px)', zIndex: 1 }}
+      >
+        <span className="absolute inset-y-0 left-0" style={{ width: 1, background: 'rgba(0,0,0,0.06)' }} />
+        <span className="absolute inset-y-0 right-0" style={{ width: 1, background: 'rgba(0,0,0,0.06)' }} />
+      </div>
+
       {/* Left: text */}
       <div
         ref={textRef}
@@ -355,9 +365,16 @@ export default function HeroSection() {
 
       <div
         ref={trustRef}
-        className="absolute inset-x-0 bottom-0"
-        style={{ zIndex: 5, willChange: 'transform' }}
+        className="absolute"
+        style={{
+          left: 'clamp(100px, 14vw, 230px)',
+          right: 'clamp(100px, 14vw, 230px)',
+          bottom: 'clamp(40px, 6vh, 80px)',
+          zIndex: 5,
+          willChange: 'transform',
+        }}
       >
+        <div aria-hidden="true" style={{ height: 1, background: 'rgba(0,0,0,0.06)' }} />
         <TrustBar />
       </div>
     </section>

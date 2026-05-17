@@ -77,7 +77,6 @@ export default function TrustBar() {
         position: 'relative',
         width: '100%',
         height: 130,
-        paddingLeft: 'clamp(100px, 14vw, 230px)',
         background: 'transparent',
         display: 'flex',
         alignItems: 'center',
