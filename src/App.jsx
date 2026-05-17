@@ -4,6 +4,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
+import TestimonialsSection from './components/Testimonials'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -36,6 +37,7 @@ export default function App() {
     <div className="bg-white overflow-x-hidden">
       <Navbar lenisRef={lenisRef} />
       <HeroSection />
+      <TestimonialsSection />
     </div>
   )
 }

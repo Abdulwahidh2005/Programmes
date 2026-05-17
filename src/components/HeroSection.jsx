@@ -69,10 +69,10 @@ export default function HeroSection() {
         const rect = section.getBoundingClientRect()
         const isMobile = window.innerWidth < 768
 
-        // Stack sits clearly to the right of the text
-        const stackCX = isMobile ? rect.width * 0.52 : rect.width * 0.68
-        const stackCY = isMobile ? rect.height * 0.55 : rect.height * 0.42
-        const scale   = isMobile ? 0.50 : 0.68
+        // Stack aligns vertically with the heading (clear of the navbar) and is larger
+        const stackCX = isMobile ? rect.width * 0.52 : rect.width * 0.66
+        const stackCY = isMobile ? rect.height * 0.52 : rect.height * 0.45
+        const scale   = isMobile ? 0.46 : 0.62
 
         cardsEls.forEach((el, i) => {
           const cardRect = el.getBoundingClientRect()
@@ -85,7 +85,7 @@ export default function HeroSection() {
             y: stackCY - naturalCY + s.dy,
             rotation: s.rotation,
             scale,
-            z: 80 * s.depth,
+            z: 110 * s.depth,
             zIndex: 10 - i,
             filter: 'drop-shadow(0 28px 44px rgba(0,0,0,0.22)) drop-shadow(0 8px 14px rgba(0,0,0,0.14))',
             transformStyle: 'preserve-3d',
@@ -123,13 +123,13 @@ export default function HeroSection() {
         },
       })
 
-      // Phase 1: text fades out immediately on scroll before cards move
+      // Phase 1: left text slides straight up and off the top of the screen — stays
+      // fully sharp (no fade, no blur), in parallel with the card travel from the
+      // very start, so it leaves "above the page" instead of overlapping the cards.
       tl.to(text, {
-        y: -80,
-        opacity: 0,
-        filter: 'blur(8px)',
-        ease: 'power2.in',
-        duration: 0.22,
+        y: () => -(sectionRef.current.getBoundingClientRect().height + 40),
+        ease: 'none',
+        duration: 0.6,
       }, 0)
 
       // Phase 2: cards spread from stacked fan to natural 2x2 grid positions
